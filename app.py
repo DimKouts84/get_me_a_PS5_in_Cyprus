@@ -6,6 +6,9 @@ import re
 from urllib.request import Request, urlopen
 import smtplib
 import ssl
+import schedule
+import time
+import logging
 
 # Email account information
 sender_email = "your_email@example.com"
@@ -16,6 +19,10 @@ smtp_server = "smtp.gmail.com"
 smtp_port = 587
 # Create a secure SSL context
 context = ssl.create_default_context()
+
+# Set up logging
+logging.basicConfig(filename='ps5.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
 
 # List of dictionaries containing store URLs and search keywords
 stores = [
@@ -30,12 +37,12 @@ def check_store(store):
     url = store["url"]
     keyword = store["keyword"]
     name = store["name"]
-    soup = bs(urlopen(Request(url, headers={'User-Agent': 'Mozilla/5.0'})).read().decode('utf-8'), 'html.parser')
-    if re.findall(keyword, str(soup)):
+    website_soup = bs(urlopen(Request(url, headers={'User-Agent': 'Mozilla/5.0'})).read().decode('utf-8'), 'html.parser')
+    if re.findall(keyword, str(website_soup)):
         send_email(name, url)
-        print(f"Found in {name} Store")
+        logging.info(f"Found in {name} Store ! ! ! !")
     else:
-        print(f"Not found in {name} Store")
+        logging.info(f"Not found in {name} Store")    
 
 # Function to send email
 def send_email(name, url):
@@ -44,7 +51,16 @@ def send_email(name, url):
         server.login(sender_email, sender_password)
         message = f"Subject: A PlayStation 5 Digital Edition is found in {name}!\n\nURL: {url}"
         server.sendmail(sender_email, receiver_email, message)
+        logging.info(f"Email is send to {receiver_email} Store")
 
-# Check each store in the stores list
-for store in stores:
-    check_store(store)
+# Make a job to me scheduled and run every day
+def scheduled_job():
+    for store in stores: check_store(store)
+
+# Schedule the task to run in a specific timeframes.
+schedule.every().hour.at(":00").do(scheduled_job)
+
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
