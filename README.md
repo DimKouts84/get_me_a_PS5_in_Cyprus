@@ -4,3 +4,4 @@
 
 This script checks the biggest retail shops in Cyprus and checks if there is a "Playstation 5 Digital Edition" available for purchase.
 If a PS5 is found available, it sends an email (using gmail) with the store name and url to buy it.
+The script is scheduled to run every hour and log the results.
