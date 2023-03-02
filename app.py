@@ -1,14 +1,9 @@
 # This script checks the biggest retail shop in Cyprus and checks if there is a Playstation 5 available for purchase.
-# If there is, it sends an email (using gmail) with the store name and url to buy it.
+# It logs the results of the search and if there is a PS5 available, it sends an email (using gmail) with the store name and url to buy it.
 
 from bs4 import BeautifulSoup as bs
-import re
+import re, smtplib, ssl, schedule, time, logging 
 from urllib.request import Request, urlopen
-import smtplib
-import ssl
-import schedule
-import time
-import logging
 
 # Email account information
 sender_email = "your_email@example.com"
